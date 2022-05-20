@@ -86,7 +86,15 @@ sudo mount /dev/loop101p2 rootfs
 echo "Sync Files"
 rsync -avz original_rootfs/ rootfs
 rsync -avz original_boot/ boot
-read -p "=====" test
+old_uuid=$(sudo blkid /dev/loop100 | awk -F '"' '{print $2}')
+new_uuid=$(sudo blkid /dev/loop101 | awk -F '"' '{print $2}')
+echo "old uuid is $old_uuid, and new uuid is $new_uuid"
+
+sudo sed -i -e "s/$old_uuid/$new_uuid/g" boot/cmdline.txt
+sudo sed -i -e "s/$old_uuid/$new_uuid/g" rootfs/etc/fstab
+cat boot/cmdline.txt
+cat rootfs/etc/fstab 
+
 
 echo "Umounting devices"
 sleep 3
